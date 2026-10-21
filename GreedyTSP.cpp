@@ -65,10 +65,10 @@ void greedyTSP(vector<Node> nodes)
 
 int main()
 {
-    string filename = "testcase.txt"; // ścieżka do pliku
-    ifstream inputFile(filename);
+    string filename = "input.txt"; // ścieżka do pliku
+    ifstream inputFile(filename);// otwieranie pliku
 
-    if (!inputFile.is_open()) // otwieranie pliku
+    if (!inputFile.is_open()) 
     {
         cerr << "Error: Could not open file " << filename << "\n";
         return 1;
