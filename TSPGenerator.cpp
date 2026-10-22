@@ -87,20 +87,15 @@ void createFileManual(string filename, int n){
     input.close();
 }
 
-bool createFileRandom(string filename, vector<int> mRange, vector<int> xRange, vector<int> yRange){
-    if(mRange[0]<1 || mRange[1]<1 || xRange[0]<1 || xRange[1]<1 || yRange[0]<1 || yRange[1]<1){
+bool createFileRandom(string filename, int mRange, vector<int> xRange, vector<int> yRange){
+    if(mRange<1 || xRange[0]<1 || xRange[1]<1 || yRange[0]<1 || yRange[1]<1){
         return false;
     }
     else{
-        random_device rd;
-        mt19937 gen(rd());
-        uniform_int_distribution<> distribN(mRange[0], mRange[1]);
-
-        int n = distribN(gen);
         ofstream input(filename);
-        input << n << endl;
+        input << mRange << endl;
         vector<string> visited;
-        for(int i=1; i<=n; i++){
+        for(int i=1; i<=mRange; i++){
             bool repeat=true;
             int x;
             int y;
@@ -160,19 +155,12 @@ int main() {
 
     } 
     else if(choice == 2){
-        vector<int> nRange(2);
+        int nRange;
         vector<int> xRange(2);
         vector<int> yRange(2);
 
-        cout << "Podaj minimalną liczbę wierzchołków: ";
-        cin >> nRange[0];
-        cout << "Podaj maksymalną liczbę wierzchołków: ";
-        cin >> nRange[1];
-
-        if(nRange[0] > nRange[1]){
-            cout << "Wartość minimalna nie może być większa od maksymalnej." << endl;
-            return 1;
-        }
+        cout << "Podaj liczbę wierzchołków: ";
+        cin >> nRange;
 
         cout << "Podaj minimalną wartość współrzędnej X: ";
         cin >> xRange[0];
