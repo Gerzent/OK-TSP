@@ -93,7 +93,7 @@ int main()
 
     inputFile.close();
 
-    cout << "Successfully loaded " << nodes.size() << " nodes:\n";
+    cout << "Wczytano " << nodes.size() << " wierchołków:\n";
     for (const auto &node : nodes)
     {
         cout << "Node " << node.id << ": (" << node.x << ", " << node.y << ")\n";
