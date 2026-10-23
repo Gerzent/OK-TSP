@@ -4,6 +4,7 @@
 #include <string>
 #include <cmath>
 #include <limits>
+#include <iomanip>
 using namespace std;
 
 struct Node
@@ -60,15 +61,18 @@ void greedyTSP(vector<Node> nodes)
         if (i + 1 < tour.size())
             cout << " -> ";
     }
-    cout << "\n\nCalkowity dystans: " << totalDistance << "\n";
+    //cout << "\n\nCalkowity dystans: " << totalDistance << "\n";
+    cout << "\n\nCalkowity dystans: " << fixed << setprecision(2) << totalDistance << "\n";
 }
 
 int main()
 {
-    string filename = "input.txt"; // ścieżka do pliku
-    ifstream inputFile(filename);// otwieranie pliku
+    string filename;
+    cout << "podaj ścieżkę relatywną do pliku:\n";
+    cin >> filename;
+    ifstream inputFile(filename); // otwieranie pliku
 
-    if (!inputFile.is_open()) 
+    if (!inputFile.is_open())
     {
         cerr << "Error: Could not open file " << filename << "\n";
         return 1;
