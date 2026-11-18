@@ -19,11 +19,13 @@ double calculateDistance(Node &a, Node &b)
     double dy = a.y - b.y;
     return sqrt(dx * dx + dy * dy);
 }
+
 struct Edge
 {
     double pheromonLevel = 0.1;
     double distance;
 };
+
 class Ant
 {
     double trust = 0.5;
@@ -71,7 +73,7 @@ public:
                     cumulative += weights[i];
                     if (randomNumber <= cumulative) // patrzymy w jakim przedziale jest nasza liczba, realizacja losowości ważonej
                     {
-                        chosenNode = candidates[i]; // wybór natepnego node
+                        chosenNode = candidates[i]; // wybór następnego node
                         break;
                     }
                 }
@@ -88,7 +90,6 @@ public:
 
 int main()
 {
-
     string filename;
     cout << "podaj ścieżkę relatywną do pliku:\n";
     cin >> filename;
@@ -119,7 +120,7 @@ int main()
 
     inputFile.close();
 
-    cout << "Wczytano " << numNodes << " wierchołków:\n";
+    cout << "Wczytano " << numNodes << " wierzchołków:\n";
     for (int i = 1; i <= numNodes; i++)
     {
         cout << "Node " << nodes[i].id << ": (" << nodes[i].x << ", " << nodes[i].y << ")\n";
@@ -135,16 +136,76 @@ int main()
     }
 
     int numAnts = 10;
+    int numIterations = 100;
+    double evaporationRate = 0.5;
+    double Q = 100.0;   // stała ilości zostawianego feromonu
+
     vector<Ant> ants(numAnts);
+    vector<int> bestPath;
+    double bestLength = numeric_limits<double>::infinity();
 
     random_device rd;                                         // źródło entropii
     mt19937 rng(rd());                                        // generator losowości
     uniform_int_distribution<int> startNodeDist(1, numNodes); // rozkład do losowania punktu startowego (1..numNodes)
-    for (int t = 0; t < numAnts; t++)
+
+    // MAIN
+    for (int iter = 0; iter < numIterations; iter++)
     {
-        int randomNode = startNodeDist(rng);
-        ants[t].walkGraph(edges, numNodes, randomNode, rng);
+        // budowanie tras przez mrówki
+        for (int t = 0; t < numAnts; t++)
+        {
+            int randomNode = startNodeDist(rng);
+            ants[t].walkGraph(edges, numNodes, randomNode, rng);
+
+            if (ants[t].tourLength < bestLength)
+            {
+                bestLength = ants[t].tourLength;
+                bestPath = ants[t].path;
+            }
+        }
+
+        // parowanie
+        for (int i = 1; i <= numNodes; i++)
+        {
+            for (int j = 1; j <= numNodes; j++)
+            {
+                edges[i][j].pheromonLevel *= (1.0 - evaporationRate);
+                // zabezpieczenie przed całkowitym wyzerowaniem feromonu
+                if (edges[i][j].pheromonLevel < 1e-6)
+                {
+                    edges[i][j].pheromonLevel = 1e-6;
+                }
+            }
+        }
+
+        // nowe feromony
+        for (int t = 0; t < numAnts; t++)
+        {
+            double deposit = Q / ants[t].tourLength;
+            for (size_t step = 0; step < ants[t].path.size() - 1; step++)
+            {
+                int u = ants[t].path[step];
+                int v = ants[t].path[step + 1];
+                edges[u][v].pheromonLevel += deposit;
+                edges[v][u].pheromonLevel += deposit;
+            }
+        }
     }
+
+    // wyświetlenie wyników końcowych
+    cout << "\n  WYNIKI KOŃCOWE  \n";
+    cout << fixed << setprecision(2);
+    cout << "Najkrótszy znaleziony dystans: " << bestLength << "\n";
+    cout << "Najlepsza trasa: ";
+    for (size_t i = 0; i < bestPath.size(); i++)
+    {
+        cout << bestPath[i];
+        if (i < bestPath.size() - 1)
+        {
+            cout << " -> ";
+        }
+    }
+    cout << "\n";
 
     return 0;
 }
